@@ -1,8 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using FluentValidation;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Movies.Application.Data;
 using Movies.Application.Models;
 using Movies.Application.Repositories;
+using Movies.Application.Services;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
@@ -18,8 +20,11 @@ namespace Movies.Application
         {
             services.AddDbContext<ApplicationDbContext>(cfg => cfg.UseSqlServer(connectionString));
 
-            services.AddSingleton<IMovieRepository, MovireRepository>();
+            services.AddScoped<IMovieRepository, MovieRepository>();
 
+            services.AddScoped<IMovieService , MovieService>();
+
+            services.AddValidatorsFromAssemblyContaining<ApplicationMarker>(ServiceLifetime.Scoped);
             return services;
         }
 

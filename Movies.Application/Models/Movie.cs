@@ -13,19 +13,19 @@ namespace Movies.Application.Models
         
        public required string Title { get; set; }
 
-        public string Slug => GenerateSlug();
+        public string Slug {get; private set; } = String.Empty;
 
         public required int YearOfRelease { get; set; }
 
-        public required List<string> Genres { get; init; } = new();
+        public  List<Genre> Genres { get; init; } = new();
 
 
-        private string GenerateSlug()
+        public void GenerateAndSetSlug()
         {
             var sluggedTitle = Regex.Replace(Title,"[^0-9A-Za-z_-]", string.Empty)
                                      .ToLower().Replace(" ", "-");
 
-            return $"{sluggedTitle}-{YearOfRelease}";
+            Slug = $"{sluggedTitle}-{YearOfRelease}";
         }
 
 

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Movies.Application.Data.Configurations;
 using Movies.Application.Models;
 using System;
 using System.Collections.Generic;
@@ -11,6 +12,7 @@ namespace Movies.Application.Data
     public class ApplicationDbContext :DbContext
     {
         public DbSet<Movie> Movies { get; set; }
+        public DbSet<Genre> Genre { get; set; }
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             :base(options) 
         {
@@ -21,16 +23,9 @@ namespace Movies.Application.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            SeedData(modelBuilder);
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(MovieConfiguration).Assembly);
+           
         }
-        private void SeedData(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<Movie>().HasData(
-
-                new Movie() { Id = Guid.NewGuid(), Title = "C# Hero", YearOfRelease = 2010, Genres = ["a", "b"] },
-                   new Movie() { Id = Guid.NewGuid(), Title = "C# Pro", YearOfRelease = 2010, Genres = ["a", "b"] },
-                      new Movie() { Id = Guid.NewGuid(), Title = "C#", YearOfRelease = 2010, Genres = ["a", "b"] }
-                );
-        }
+        
     }
 }
