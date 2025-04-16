@@ -18,7 +18,7 @@ namespace Movies.Application.Models
         public required int YearOfRelease { get; set; }
 
         public  List<Genre> Genres { get; init; } = new();
-
+        public List<Rating> Ratings { get; init; } = new();
 
         public void GenerateAndSetSlug()
         {
