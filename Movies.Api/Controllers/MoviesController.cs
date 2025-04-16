@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Movies.Api.Mapping;
 using Movies.Application.Models;
@@ -53,7 +54,7 @@ namespace Movies.Api.Controllers
         }
 
 
-       
+        [Authorize(AuthConstants.TrustedMemberPolicyName)]
         [HttpGet(ApiEndpoints.Movies.GetAll)]
         public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
         {
