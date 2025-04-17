@@ -21,9 +21,10 @@ namespace Movies.Application
             services.AddDbContext<ApplicationDbContext>(cfg => cfg.UseSqlServer(connectionString));
 
             services.AddScoped<IMovieRepository, MovieRepository>();
-
             services.AddScoped<IMovieService , MovieService>();
 
+            services.AddScoped<IRatingRepository, RatingRepository>();
+            services.AddScoped<IRatingService , RatingService>(); 
             services.AddValidatorsFromAssemblyContaining<ApplicationMarker>(ServiceLifetime.Scoped);
             return services;
         }

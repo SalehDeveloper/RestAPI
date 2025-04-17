@@ -27,7 +27,8 @@ namespace Identity.Api.Controllers
                 new (JwtRegisteredClaimNames.Jti , Guid.NewGuid().ToString()),
                 new (JwtRegisteredClaimNames.Sub , request.UserId.ToString()),
                 new (JwtRegisteredClaimNames.Email , request.Email) ,
-               
+                new Claim("userId" , request.UserId.ToString())
+
 
             };
 

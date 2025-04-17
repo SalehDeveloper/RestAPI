@@ -40,25 +40,67 @@ namespace Movies.Application.Repositories
             return false;
         }
 
-        public async Task<IEnumerable<Movie>> GetAllAsync(CancellationToken token = default)
+        public async Task<IEnumerable<Movie>> GetAllAsync(Guid? userId = default, CancellationToken token = default)
         {
-            var movies = await _context.Movies.Include(m =>m.Genres ).ToListAsync();
+            var movies = await _context.Movies.Include(m =>m.Genres ).Include(m => m.Ratings).ToListAsync();
+
+            foreach (var movie in movies)
+            {
+                movie.Rating = movie.Ratings.Any() ?
+                               movie.Ratings.Average(m => (float?)m.Rate)
+                               : 0;
+
+
+
+                if (userId.HasValue)
+                {
+                   var userRating = movie.Ratings.FirstOrDefault(r => r.UserId == userId.Value);
+
+                    movie.UserRating = userRating?.Rate;
+                }
+
+            }
+
 
             return movies;
         }
 
-        public async Task<Movie?> GetByIdAsync(Guid id, CancellationToken token = default)
+        public async Task<Movie?> GetByIdAsync(Guid id, Guid? userId = default, CancellationToken token = default)
         {
-            return await _context.Movies.Include(m => m.Genres).FirstOrDefaultAsync(m => m.Id == id );
+           
+            var movie = await _context.Movies.Include(m => m.Genres).FirstOrDefaultAsync(m => m.Id == id ,token);
+
+           if (movie is null)
+                return null;
+   
+           movie.UserRating =  await _context.Ratings.Where(r => r.MovieId == movie.Id && r.UserId == id)
+                                            .Select(r => (int?)r.Rate)
+                                            .FirstOrDefaultAsync(token);
+
+         movie.Rating =  await _context.Ratings.Where(r => r.MovieId == movie.Id)
+                                                  .AverageAsync(r =>(float?) r.Rate,token)??0;
+            return movie;
+            
         }
 
-        public async Task<Movie?> GetBySlugAsync(string slug, CancellationToken token = default)
+        public async Task<Movie?> GetBySlugAsync(string slug, Guid? userId = default, CancellationToken token = default)
         {
+            var movie = await _context.Movies.Include(m => m.Genres).FirstOrDefaultAsync(m => m.Slug == slug , token);
 
-            return await _context.Movies.Include(m => m.Genres).FirstOrDefaultAsync(m => m.Slug == slug);
+             if (movie is null)
+                return null;    
+
+             movie.UserRating  = await _context.Ratings.Where(r => r.MovieId == movie.Id &&   r.UserId  == userId)
+                                                        .Select(r => (int?)r.Rate)
+                                                        .FirstOrDefaultAsync (token);
+
+            movie.Rating = await _context.Ratings.Where(r => r.MovieId == movie.Id)
+                                                 .AverageAsync(r => (float?)r.Rate) ?? 0;
+
+            return movie;
         }
 
-        public async Task<bool> UpdateAsync(Movie movie, CancellationToken token = default)
+        public async Task<bool> UpdateAsync(Movie movie,  CancellationToken token = default)
         {   
           
             
@@ -87,6 +129,8 @@ namespace Movies.Application.Repositories
             {
                 _context.Genre.Add(new Genre { Id = genre.Id, Name = genre.Name, MovieId = existingMovie.Id });
             }
+
+
 
             await _context.SaveChangesAsync();
 

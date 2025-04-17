@@ -28,7 +28,8 @@ namespace Movies.Api.Mapping
 
                     Errors = ex.Errors.Select( x=> new ValidationResponse
                     {
-                        PropertyName = x.PropertyName , Message=x.ErrorMessage
+                        PropertyName = x.PropertyName
+                        , Message=x.ErrorMessage
                     })
                 };
 

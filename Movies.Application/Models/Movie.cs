@@ -15,6 +15,8 @@ namespace Movies.Application.Models
 
         public string Slug {get; private set; } = String.Empty;
 
+        public float? Rating {  get; set; }
+        public int ? UserRating { get; set; }
         public required int YearOfRelease { get; set; }
 
         public  List<Genre> Genres { get; init; } = new();
