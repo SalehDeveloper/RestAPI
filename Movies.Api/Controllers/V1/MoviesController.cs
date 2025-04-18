@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Asp.Versioning;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Movies.Api.Auth;
@@ -9,9 +10,9 @@ using Movies.Application.Services;
 using Movies.Contracts.Requests;
 using Movies.Contracts.Responses;
 
-namespace Movies.Api.Controllers
+namespace Movies.Api.Controllers.V1
 {
-
+    [ApiVersion(1.0,Deprecated =true)]
     [ApiController]
     public class MoviesController : ControllerBase
     {
@@ -40,7 +41,9 @@ namespace Movies.Api.Controllers
 
 
         [Authorize]
+    
         [HttpGet(ApiEndpoints.Movies.Get)]
+       
         public async Task<IActionResult> Get([FromRoute] string idOrSlug, CancellationToken cancellationToken)
         {
             var userId = HttpContext.GetUserId();
@@ -56,6 +59,7 @@ namespace Movies.Api.Controllers
             return Ok(movieResponse);
         }
 
+        
 
         [Authorize]
         [HttpGet(ApiEndpoints.Movies.GetAll)]

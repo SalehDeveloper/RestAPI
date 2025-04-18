@@ -3,6 +3,7 @@
     public static class ApiEndpoints
     {
         private const string ApiBase = "api";
+        //private const string ApiBase = "api/v{version:apiVersion}";
 
         public static class Movies
         {
