@@ -40,27 +40,34 @@ namespace Movies.Application.Repositories
             return false;
         }
 
-        public async Task<IEnumerable<Movie>> GetAllAsync(Guid? userId = default, CancellationToken token = default)
+        public async Task<IEnumerable<Movie>> GetAllAsync(GetAllMoviesOptions options, CancellationToken token = default)
         {
-            var movies = await _context.Movies.Include(m =>m.Genres ).Include(m => m.Ratings).ToListAsync();
+            ;
 
+
+            IQueryable<Movie> query = _context.Movies.Include(m => m.Genres)
+                                                     .Include(m => m.Ratings)
+                                                     .AsQueryable();
+
+             if (!string.IsNullOrEmpty(options.Title))
+                query = query.Where(x=> x.Title.Contains(options.Title));
+
+             if (options.YearOfRelease.HasValue)
+                 query = query.Where(x=> x.YearOfRelease == options.YearOfRelease);
+
+            var movies = await query.ToListAsync();
+            
+            
             foreach (var movie in movies)
             {
-                movie.Rating = movie.Ratings.Any() ?
-                               movie.Ratings.Average(m => (float?)m.Rate)
-                               : 0;
+                movie.Rating = movie.Ratings.Any() ? movie.Ratings.Average(m => (float?)m.Rate) : 0;
 
-
-
-                if (userId.HasValue)
+                if (options.UserId.HasValue)
                 {
-                   var userRating = movie.Ratings.FirstOrDefault(r => r.UserId == userId.Value);
-
+                    var userRating = movie.Ratings.FirstOrDefault(r => r.UserId == options.UserId.Value);
                     movie.UserRating = userRating?.Rate;
                 }
-
             }
-
 
             return movies;
         }
