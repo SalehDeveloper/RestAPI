@@ -28,6 +28,7 @@ namespace Movies.Api.Controllers.V2
       
         [Authorize]
         [HttpGet(ApiEndpoints.Movies.GetAll)]
+        [ProducesResponseType(typeof(MoviesResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAll([FromQuery] GetAllMoviesRequest request,CancellationToken cancellationToken)
         {
             var userId = HttpContext.GetUserId();
