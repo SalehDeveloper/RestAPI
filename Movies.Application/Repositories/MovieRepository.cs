@@ -55,9 +55,29 @@ namespace Movies.Application.Repositories
              if (options.YearOfRelease.HasValue)
                  query = query.Where(x=> x.YearOfRelease == options.YearOfRelease);
 
+            if (!string.IsNullOrEmpty(options.SortField))
+            {
+               switch(options.SortField.ToLower())
+                {
+                    case "title":
+                        query = options.SortOrder == SortOrder.Descending ? query.OrderByDescending(x => x.Title)
+                                                                         : query.OrderBy(x => x.Title);
+                        break;
+
+                    case "yearofrelease":
+                        query = options.SortOrder == SortOrder.Descending ? query.OrderByDescending(x => x.YearOfRelease)
+                                                                          : query.OrderBy(x => x.YearOfRelease);
+                        break;
+
+                }
+
+            }
+
             var movies = await query.ToListAsync();
+
             
-            
+
+
             foreach (var movie in movies)
             {
                 movie.Rating = movie.Ratings.Any() ? movie.Ratings.Average(m => (float?)m.Rate) : 0;
