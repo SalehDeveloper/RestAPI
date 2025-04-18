@@ -67,9 +67,10 @@ namespace Movies.Api.Controllers
 
 
             var movies = await _movieService.GetAllAsync(options, cancellationToken);
+          
+            var movieCount = await _movieService.GetCountAsync(request.Title, request.YearOfRelease, cancellationToken);
 
-
-            var moviesResponse = movies.MapToResponse();
+            var moviesResponse = movies.MapToResponse(request.Page , request.PageSize , movieCount);
 
             return Ok(moviesResponse);
         }

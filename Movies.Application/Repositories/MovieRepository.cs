@@ -72,6 +72,7 @@ namespace Movies.Application.Repositories
                 }
 
             }
+            query = query.Skip((options.Page-1)*options.PageSize).Take(options.PageSize);
 
             var movies = await query.ToListAsync();
 
@@ -175,6 +176,14 @@ namespace Movies.Application.Repositories
             return  movie == null ? false : true;
         }
 
+        public async Task<int> GetCountAsync(string? title, int? yearOfRelease, CancellationToken token = default)
+        {
+            return await _context.Movies
+                          .Where(x =>
+                                  (string.IsNullOrEmpty(title) || x.Title.Contains(title)) &&
+                                 (!yearOfRelease.HasValue || x.YearOfRelease == yearOfRelease))
+                           .CountAsync(token);
+        }
     }
 
 }
