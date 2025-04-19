@@ -101,7 +101,7 @@ namespace Movies.Application.Repositories
            if (movie is null)
                 return null;
    
-           movie.UserRating =  await _context.Ratings.Where(r => r.MovieId == movie.Id && r.UserId == id)
+           movie.UserRating =  await _context.Ratings.Where(r => r.MovieId == movie.Id && r.UserId == userId)
                                             .Select(r => (int?)r.Rate)
                                             .FirstOrDefaultAsync(token);
 

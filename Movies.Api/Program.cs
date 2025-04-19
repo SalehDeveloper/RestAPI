@@ -54,6 +54,21 @@ builder.Services.AddApiVersioning(x=>
 
 }).AddMvc().AddApiExplorer();
 
+builder.Services.AddOutputCache(x => 
+{
+
+    x.AddBasePolicy(c => c.Cache());
+    x.AddPolicy("MovieCache", c =>
+    {
+        c.Cache().Expire(TimeSpan.FromMinutes(1))
+        .SetVaryByQuery(new[] {"title" ,"yearofrelease","sortby","page","pagesize" })
+        .Tag("movies");
+
+    });
+});
+
+
+builder.Services.AddResponseCaching();
 builder.Services.AddControllers();
 builder.Services.AddHealthChecks().AddCheck<DatabaseHealthCheck>(DatabaseHealthCheck.Name);
 builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>,ConfigureSwaggerOptions>();
@@ -84,8 +99,8 @@ if (app.Environment.IsDevelopment())
 app.MapHealthChecks("_health");
 app.UseHttpsRedirection();
 app.UseAuthentication();
-
 app.UseAuthorization();
+app.UseOutputCache();
 app.UseMiddleware<ValidationMappingMiddlware>();
 app.MapControllers();
 
